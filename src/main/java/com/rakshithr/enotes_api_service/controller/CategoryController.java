@@ -1,5 +1,7 @@
 package com.rakshithr.enotes_api_service.controller;
 
+import com.rakshithr.enotes_api_service.dto.CategoryDto;
+import com.rakshithr.enotes_api_service.dto.CategoryResponse;
 import com.rakshithr.enotes_api_service.entity.Category;
 import com.rakshithr.enotes_api_service.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,8 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/save-category")
-    public ResponseEntity<?> saveCategory(@RequestBody Category category){
-        Boolean saveCategory = categoryService.saveCategory(category);
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto){
+        Boolean saveCategory = categoryService.saveCategory(categoryDto);
         if(saveCategory)
             return  new ResponseEntity<>("saved success", HttpStatus.CREATED);
         else
@@ -30,7 +32,16 @@ public class CategoryController {
 
     @GetMapping("/category")
     public ResponseEntity<?> getAllCategory(){
-        List<Category> allCategory = categoryService.getAllCategory();
+        List<CategoryDto> allCategory = categoryService.getAllCategory();
+        if(CollectionUtils.isEmpty(allCategory))
+            return  ResponseEntity.noContent().build();
+        else
+            return  new ResponseEntity<>(allCategory, HttpStatus.OK);
+    }
+
+    @GetMapping("/active-category")
+    public ResponseEntity<?> getActiveCategory(){
+        List<CategoryResponse> allCategory = categoryService.getActiveCategory();
         if(CollectionUtils.isEmpty(allCategory))
             return  ResponseEntity.noContent().build();
         else
