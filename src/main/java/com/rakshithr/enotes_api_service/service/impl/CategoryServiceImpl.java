@@ -12,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -36,15 +37,38 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getAllCategory() {
-        List<Category> categoryList = categoryRepo.findAll();
+        List<Category> categoryList = categoryRepo.findByIsDeletedFalse();
         List<CategoryDto> categoryDtoList = categoryList.stream().map(cat-> modelMapper.map(cat,CategoryDto.class)).toList();
         return categoryDtoList;
     }
 
     @Override
     public List<CategoryResponse> getActiveCategory() {
-        List<Category> categoryList = categoryRepo.findByIsActiveTrue();
+        List<Category> categoryList = categoryRepo.findByIsActiveTrueAndIsDeletedFalse();
         List<CategoryResponse> categoryResponseList = categoryList.stream().map(cat-> modelMapper.map(cat,CategoryResponse.class)).toList();
         return categoryResponseList;
+    }
+
+    @Override
+    public CategoryDto getCategoryById(Integer id) {
+        Optional<Category>findByCategory = categoryRepo.findByIdAndIsDeletedFalse(id);
+        if(findByCategory.isPresent()){
+            Category category = findByCategory.get();
+            CategoryDto categoryDto = modelMapper.map(category, CategoryDto.class);
+            return categoryDto;
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean deleteCategory(Integer id) {
+        Optional<Category>findByCategory = categoryRepo.findById(id);
+        if(findByCategory.isPresent()){
+            Category category = findByCategory.get();
+            category.setIsDeleted(true);
+            categoryRepo.save(category);
+            return true;
+        }
+        return false;
     }
 }
