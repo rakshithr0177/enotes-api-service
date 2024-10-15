@@ -12,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
     @Override
     public Boolean saveCategory(CategoryDto categoryDto) {
+
 //        Category category = new Category();
 //        category.setName(categoryDto.getName());
 //        category.setDescription(categoryDto.getDescription());
@@ -27,11 +29,29 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = modelMapper.map(categoryDto, Category.class);
 
-        category.setIsDeleted(false);
-        category.setCreatedBy(1);
-        category.setCreatedOn(new Date());
+        if(ObjectUtils.isEmpty(category.getId())){
+            category.setIsDeleted(false);
+            category.setCreatedBy(1);
+            category.setCreatedOn(new Date());
+        }else{
+            updateCategory(category);
+        }
         Category savedCategory = categoryRepo.save(category);
         return !ObjectUtils.isEmpty(savedCategory);
+    }
+
+    private void updateCategory(Category category) {
+        Optional<Category> findById = categoryRepo.findById(category.getId());
+        if(findById.isPresent()){
+            Category existCategory = findById.get();
+            category.setCreatedBy(existCategory.getCreatedBy());
+            category.setCreatedOn(existCategory.getCreatedOn());
+            category.setIsDeleted(existCategory.getIsDeleted());
+
+            category.setUpdatedBy(1);
+            category.setUpdatedOn(new Date());
+
+        }
     }
 
     @Override
