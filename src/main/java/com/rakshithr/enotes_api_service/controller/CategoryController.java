@@ -2,8 +2,10 @@ package com.rakshithr.enotes_api_service.controller;
 
 import com.rakshithr.enotes_api_service.dto.CategoryDto;
 import com.rakshithr.enotes_api_service.dto.CategoryResponse;
+import com.rakshithr.enotes_api_service.exception.ResourceNotFoundException;
 import com.rakshithr.enotes_api_service.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/category")
@@ -47,12 +50,25 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryDetailsById(@PathVariable Integer id){
+    public ResponseEntity<?> getCategoryDetailsById(@PathVariable Integer id) throws Exception {
+//        try {
+//            CategoryDto categoryDto = categoryService.getCategoryById(id);
+//            if(ObjectUtils.isEmpty(categoryDto))
+//                return new ResponseEntity<>("Category not found with Id = "+ id, HttpStatus.NOT_FOUND);
+//            else
+//                return new ResponseEntity<>(categoryDto, HttpStatus.OK);
+//        }catch (ResourceNotFoundException e) {
+//            log.error("Controller :: getCategoryDetailsById :: {}", e.getMessage());
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+
         CategoryDto categoryDto = categoryService.getCategoryById(id);
         if(ObjectUtils.isEmpty(categoryDto))
-            return new ResponseEntity<>("Category not found with Id = "+ id, HttpStatus.NOT_FOUND);
-        else
-            return new ResponseEntity<>(categoryDto, HttpStatus.OK);
+            return new ResponseEntity<>("Internal Server Error", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(categoryDto, HttpStatus.OK);
+
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id){
