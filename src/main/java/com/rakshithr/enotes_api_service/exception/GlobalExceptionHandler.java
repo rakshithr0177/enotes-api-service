@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.io.FileNotFoundException;
+
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,6 +56,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
         log.error("GlobalExceptionHandler :: handleHttpMessageNotReadableException :: {}", e.getMessage());
         return  CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<?> handleFileNotFoundException(FileNotFoundException e){
+        log.error("GlobalExceptionHandler :: handleFileNotFoundException :: {}", e.getMessage());
+        return  CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NOT_FOUND);
 //        return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

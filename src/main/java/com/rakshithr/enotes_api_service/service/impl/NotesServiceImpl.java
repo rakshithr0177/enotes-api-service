@@ -15,10 +15,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -73,9 +76,9 @@ public class NotesServiceImpl implements NotesService {
             String originalFileName = file.getOriginalFilename();
             String extension = FilenameUtils.getExtension(originalFileName);
 
-            List<String> extensionAllow = Arrays.asList(".pdf", ".xlsx", ".jpg", ".png");
+            List<String> extensionAllow = Arrays.asList("pdf", "xlsx", "jpg", "png", "docx");
             if(!extensionAllow.contains(extension)){
-                throw new IllegalArgumentException("invalid file format : Upload only .pdf, .xlsx, .jpg");
+                throw new IllegalArgumentException("invalid file format : Upload only .pdf, .xlsx, .jpg, .png, .docx");
             }
 
             String rmdString = UUID.randomUUID().toString();
@@ -122,5 +125,16 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public List<NotesDto> getAllNotes() {
         return notesRepo.findAll().stream().map(notes -> modelMapper.map(notes, NotesDto.class)).toList();
+    }
+
+    @Override
+    public byte[] downloadFile(FileDetails fileDetails) throws Exception {
+        InputStream io = new FileInputStream(fileDetails.getPath());
+        return StreamUtils.copyToByteArray(io);
+    }
+
+    @Override
+    public FileDetails getFileDetails(Integer id) throws Exception {
+        return fileDetailsRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("File is not available"));
     }
 }
