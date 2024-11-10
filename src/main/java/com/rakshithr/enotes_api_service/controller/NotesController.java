@@ -1,11 +1,14 @@
 package com.rakshithr.enotes_api_service.controller;
 
 import com.rakshithr.enotes_api_service.dto.NotesDto;
+import com.rakshithr.enotes_api_service.entity.FileDetails;
 import com.rakshithr.enotes_api_service.service.NotesService;
 import com.rakshithr.enotes_api_service.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +34,19 @@ public class NotesController {
         else{
             return CommonUtil.createErrorResponseMessage("notes not saved", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception {
+        FileDetails fileDetails = notesService.getFileDetails(id);
+        byte[] data = notesService.downloadFile(fileDetails);
+
+        HttpHeaders headers = new HttpHeaders();
+        String contentType = CommonUtil.getContentType(fileDetails.getOriginalFileName());
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentDispositionFormData("attachment", fileDetails.getOriginalFileName());
+
+        return ResponseEntity.ok().headers(headers).body(data);
     }
 
     @GetMapping("/")
