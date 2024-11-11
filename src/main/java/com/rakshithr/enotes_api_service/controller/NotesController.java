@@ -1,6 +1,7 @@
 package com.rakshithr.enotes_api_service.controller;
 
 import com.rakshithr.enotes_api_service.dto.NotesDto;
+import com.rakshithr.enotes_api_service.dto.NotesResponse;
 import com.rakshithr.enotes_api_service.entity.FileDetails;
 import com.rakshithr.enotes_api_service.service.NotesService;
 import com.rakshithr.enotes_api_service.util.CommonUtil;
@@ -61,4 +62,17 @@ public class NotesController {
         }
     }
 
+    @GetMapping("/user-notes")
+    public ResponseEntity<?> getAllNotesByUser(
+            @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize
+    ){
+        Integer userId  = 1;
+        NotesResponse notes = notesService.getAllNotesByUser(userId, pageNo, pageSize);
+
+//        if(CollectionUtils.isEmpty(notes)){
+//            return ResponseEntity.noContent().build();
+//        }
+        return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
+    }
 }
