@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -189,7 +192,7 @@ public class NotesServiceImpl implements NotesService {
         Notes notes = notesRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("notes id invalid ! not found"));
         notes.setIsDeleted(true);
-        notes.setDeletedOn(new Date());
+        notes.setDeletedOn(LocalDateTime.now());
         notesRepo.save(notes);
     }
 
@@ -207,5 +210,24 @@ public class NotesServiceImpl implements NotesService {
         List<Notes> recycleNotes =  notesRepo.findByCreatedByAndIsDeletedTrue(userId);
         List<NotesDto> notesDtoList = recycleNotes.stream().map(note -> modelMapper.map(note, NotesDto.class)).toList();
         return notesDtoList;
+    }
+
+    @Override
+    public void hardDeleteNotes(Integer id) throws  Exception{
+        Notes notes =  notesRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("notes not found"));
+
+        if(notes.getIsDeleted()){
+            notesRepo.delete(notes);
+        } else{
+            throw new IllegalArgumentException("sorry you can't hard delete directly");
+        }
+    }
+
+    @Override
+    public void emptyRecycleBin(int userId) {
+        List<Notes> recycleNotes =  notesRepo.findByCreatedByAndIsDeletedTrue(userId);
+        if(!CollectionUtils.isEmpty(recycleNotes)){
+            notesRepo.deleteAll(recycleNotes);
+        }
     }
 }

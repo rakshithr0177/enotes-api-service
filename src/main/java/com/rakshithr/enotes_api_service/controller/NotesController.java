@@ -97,4 +97,17 @@ public class NotesController {
         }
         return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> hardDeleteNotes(@PathVariable Integer id) throws Exception {
+        notesService.hardDeleteNotes(id);
+        return CommonUtil.createBuildResponseMessage("delete success", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> emptyRecycleBin() throws Exception {
+        int userId = 1;
+        notesService.emptyRecycleBin(userId);
+        return CommonUtil.createBuildResponseMessage("delete success", HttpStatus.OK);
+    }
 }
