@@ -1,12 +1,15 @@
 package com.rakshithr.enotes_api_service.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rakshithr.enotes_api_service.dto.FavouriteNoteDto;
 import com.rakshithr.enotes_api_service.dto.NotesDto;
 import com.rakshithr.enotes_api_service.dto.NotesResponse;
+import com.rakshithr.enotes_api_service.entity.FavouriteNote;
 import com.rakshithr.enotes_api_service.entity.FileDetails;
 import com.rakshithr.enotes_api_service.entity.Notes;
 import com.rakshithr.enotes_api_service.exception.ResourceNotFoundException;
 import com.rakshithr.enotes_api_service.repository.CategoryRepository;
+import com.rakshithr.enotes_api_service.repository.FavouriteNoteRepository;
 import com.rakshithr.enotes_api_service.repository.FileDetailsRepository;
 import com.rakshithr.enotes_api_service.repository.NotesRepository;
 import com.rakshithr.enotes_api_service.service.NotesService;
@@ -29,10 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +42,8 @@ import java.util.UUID;
 public class NotesServiceImpl implements NotesService {
 
     private final NotesRepository notesRepo;
+
+    private final FavouriteNoteRepository favouriteNoteRepo;
 
     private final FileDetailsRepository fileDetailsRepo;
 
@@ -229,5 +232,30 @@ public class NotesServiceImpl implements NotesService {
         if(!CollectionUtils.isEmpty(recycleNotes)){
             notesRepo.deleteAll(recycleNotes);
         }
+    }
+
+    @Override
+    public void favouriteNotes(Integer noteId) throws Exception{
+        int userId = 1;
+        Notes notes = notesRepo.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("notes not found & id invalid!"));
+        FavouriteNote favouriteNote = FavouriteNote.builder()
+                .note(notes)
+                .userId(userId)
+                .build();
+        favouriteNoteRepo.save(favouriteNote);
+    }
+
+    @Override
+    public void unFavouriteNotes(Integer favouriteNoteId) throws Exception{
+        int userId = 1;
+        FavouriteNote favouriteNote = favouriteNoteRepo.findById(favouriteNoteId).orElseThrow(() -> new ResourceNotFoundException("favourite note not found & id invalid!"));
+        favouriteNoteRepo.delete(favouriteNote);
+    }
+
+    @Override
+    public List<FavouriteNoteDto> getUserFavouriteNotes() {
+        int userId = 1;
+        List<FavouriteNote> favouriteNotes = favouriteNoteRepo.findByUserId(userId);
+        return favouriteNotes.stream().map(fn -> modelMapper.map(fn, FavouriteNoteDto.class)).toList();
     }
 }
