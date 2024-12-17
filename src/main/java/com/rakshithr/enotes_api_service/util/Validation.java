@@ -1,6 +1,9 @@
 package com.rakshithr.enotes_api_service.util;
 
 import com.rakshithr.enotes_api_service.dto.CategoryDto;
+import com.rakshithr.enotes_api_service.dto.TodoDto;
+import com.rakshithr.enotes_api_service.enums.TodoStatus;
+import com.rakshithr.enotes_api_service.exception.ResourceNotFoundException;
 import com.rakshithr.enotes_api_service.exception.ValidationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -47,5 +50,23 @@ public class Validation {
         if(!error.isEmpty()){
             throw new ValidationException(error);
         }
+    }
+
+    public void todoValidation(TodoDto todo) throws Exception{
+        TodoDto.StatusDto reqStatus = todo.getStatus();
+        TodoStatus[] status = TodoStatus.values();
+
+        boolean statusFound = false;
+
+        for(TodoStatus st : status){
+            if(st.getId().equals(reqStatus.getId()) ){
+                statusFound = true;
+            }
+        }
+
+        if (!statusFound){
+            throw new ResourceNotFoundException("invalid status");
+        }
+
     }
 }
