@@ -5,9 +5,11 @@ import com.rakshithr.enotes_api_service.dto.TodoDto;
 import com.rakshithr.enotes_api_service.dto.UserDto;
 import com.rakshithr.enotes_api_service.entity.Role;
 import com.rakshithr.enotes_api_service.enums.TodoStatus;
+import com.rakshithr.enotes_api_service.exception.ExistDataException;
 import com.rakshithr.enotes_api_service.exception.ResourceNotFoundException;
 import com.rakshithr.enotes_api_service.exception.ValidationException;
 import com.rakshithr.enotes_api_service.repository.RoleRepository;
+import com.rakshithr.enotes_api_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +25,8 @@ import java.util.Map;
 public class Validation {
 
     private final RoleRepository roleRepository;
+
+    private final UserRepository userRepository;
 
     public void categoryValidation(CategoryDto categoryDto){
 
@@ -92,6 +96,14 @@ public class Validation {
 
         if(!StringUtils.hasText(userDto.getEmail()) || !userDto.getEmail().matches(Constants.EMAIL_REGEX)){
             throw new IllegalArgumentException("email is invalid");
+        }
+        else{
+            // validate email existing
+            Boolean existEmail = userRepository.existsByEmail(userDto.getEmail());
+
+            if(existEmail){
+                throw new ExistDataException("email id already exist");
+            }
         }
 
         if(!StringUtils.hasText(userDto.getMobNo()) || !userDto.getMobNo().matches(Constants.MOBNO_REGEX)){
