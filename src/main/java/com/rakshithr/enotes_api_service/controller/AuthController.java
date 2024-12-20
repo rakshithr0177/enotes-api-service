@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final UserService userService;
 
     @PostMapping("/")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto){
+    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) throws Exception {
         Boolean register = userService.register(userDto);
 
         if(register){
