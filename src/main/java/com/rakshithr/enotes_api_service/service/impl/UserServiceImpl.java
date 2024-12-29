@@ -10,6 +10,7 @@ import com.rakshithr.enotes_api_service.entity.Role;
 import com.rakshithr.enotes_api_service.entity.User;
 import com.rakshithr.enotes_api_service.repository.RoleRepository;
 import com.rakshithr.enotes_api_service.repository.UserRepository;
+import com.rakshithr.enotes_api_service.service.JwtService;
 import com.rakshithr.enotes_api_service.service.UserService;
 import com.rakshithr.enotes_api_service.service.EmailService;
 import com.rakshithr.enotes_api_service.util.Validation;
@@ -42,6 +43,8 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
 
     private final BCryptPasswordEncoder passwordEncoder;
+
+    private final JwtService jwtService;
 
     @Override
     public Boolean register(UserDto userDto, String url) throws Exception {
@@ -76,7 +79,7 @@ public class UserServiceImpl implements UserService {
         if(authentication.isAuthenticated()){
             CustomUserDetails customUserDetails = (CustomUserDetails)authentication.getPrincipal();
 
-            String token = "hjhdsjhjhdsjhfjkshddjhjadshkjfh";
+            String token = jwtService.generateToken(customUserDetails.getUser());
 
             LoginResponse loginResponse = LoginResponse.builder()
                     .token(token)
