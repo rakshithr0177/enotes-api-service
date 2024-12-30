@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.FileNotFoundException;
+import java.nio.file.AccessDeniedException;
 
 @Slf4j
 @ControllerAdvice
@@ -74,6 +75,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e){
         log.error("GlobalExceptionHandler :: BadCredentialsException :: {}", e.getMessage());
         return  CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(BadCredentialsException e){
+        log.error("GlobalExceptionHandler :: AccessDeniedException :: {}", e.getMessage());
+        return  CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
 }
