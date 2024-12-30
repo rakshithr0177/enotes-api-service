@@ -13,6 +13,7 @@ import com.rakshithr.enotes_api_service.repository.FavouriteNoteRepository;
 import com.rakshithr.enotes_api_service.repository.FileDetailsRepository;
 import com.rakshithr.enotes_api_service.repository.NotesRepository;
 import com.rakshithr.enotes_api_service.service.NotesService;
+import com.rakshithr.enotes_api_service.util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -172,7 +173,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public NotesResponse getAllNotesByUser(Integer userId, Integer pageNo, Integer pageSize) {
+    public NotesResponse getAllNotesByUser(Integer pageNo, Integer pageSize) {
+        Integer userId  = CommonUtil.getLoggInUser().getId();
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Notes> pageNotes = notesRepo.findByCreatedByAndIsDeletedFalse(userId, pageable);
 
@@ -209,7 +211,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public List<NotesDto> getUserRecycleBinNotes(Integer userId) {
+    public List<NotesDto> getUserRecycleBinNotes() {
+        Integer userId = CommonUtil.getLoggInUser().getId();
         List<Notes> recycleNotes =  notesRepo.findByCreatedByAndIsDeletedTrue(userId);
         List<NotesDto> notesDtoList = recycleNotes.stream().map(note -> modelMapper.map(note, NotesDto.class)).toList();
         return notesDtoList;
@@ -227,7 +230,8 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public void emptyRecycleBin(int userId) {
+    public void emptyRecycleBin() {
+        Integer userId = CommonUtil.getLoggInUser().getId();
         List<Notes> recycleNotes =  notesRepo.findByCreatedByAndIsDeletedTrue(userId);
         if(!CollectionUtils.isEmpty(recycleNotes)){
             notesRepo.deleteAll(recycleNotes);
@@ -254,7 +258,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public List<FavouriteNoteDto> getUserFavouriteNotes() {
-        int userId = 1;
+        Integer userId = CommonUtil.getLoggInUser().getId();
         List<FavouriteNote> favouriteNotes = favouriteNoteRepo.findByUserId(userId);
         return favouriteNotes.stream().map(fn -> modelMapper.map(fn, FavouriteNoteDto.class)).toList();
     }

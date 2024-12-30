@@ -1,6 +1,5 @@
 package com.rakshithr.enotes_api_service.dto;
 
-import com.rakshithr.enotes_api_service.entity.Role;
 import lombok.*;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class UserRequest {
 
     private Integer id;
 

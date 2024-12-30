@@ -1,10 +1,14 @@
 package com.rakshithr.enotes_api_service.util;
 
+import com.rakshithr.enotes_api_service.config.security.CustomUserDetails;
+import com.rakshithr.enotes_api_service.dto.UserResponse;
+import com.rakshithr.enotes_api_service.entity.User;
 import com.rakshithr.enotes_api_service.handler.GenericResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class CommonUtil {
 
@@ -73,5 +77,10 @@ public class CommonUtil {
         String apiUrl = request.getRequestURL().toString();   // http://localhost:8080/api/v1/auth/
         String apiUri = request.getRequestURI();             // /api/v1/auth/
         return apiUrl.replace(apiUri, "");       // http://localhost:8080
+    }
+
+    public static User getLoggInUser(){
+        CustomUserDetails logUser = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return logUser.getUser();
     }
 }

@@ -6,6 +6,7 @@ import com.rakshithr.enotes_api_service.enums.TodoStatus;
 import com.rakshithr.enotes_api_service.exception.ResourceNotFoundException;
 import com.rakshithr.enotes_api_service.repository.TodoRepository;
 import com.rakshithr.enotes_api_service.service.TodoService;
+import com.rakshithr.enotes_api_service.util.CommonUtil;
 import com.rakshithr.enotes_api_service.util.Validation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -60,7 +61,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public List<TodoDto> getTodoByUser() {
-        Integer userId = 1;
+        Integer userId = CommonUtil.getLoggInUser().getId();
         List<Todo> todos = todoRepository.findByCreatedBy(userId);
         return todos.stream().map(todo -> modelMapper.map(todo, TodoDto.class)).toList();
     }
