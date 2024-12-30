@@ -1,8 +1,12 @@
 package com.rakshithr.enotes_api_service.service.impl;
 
 import com.rakshithr.enotes_api_service.entity.User;
+import com.rakshithr.enotes_api_service.exception.JwtAuthenticationException;
+import com.rakshithr.enotes_api_service.exception.JwtTokenExpiredException;
 import com.rakshithr.enotes_api_service.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -58,12 +62,20 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(decryptKey(secretKey))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claims;
+        Claims claims = null;
+        try {
+            return Jwts.parser()
+                    .verifyWith(decryptKey(secretKey))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        }catch (ExpiredJwtException e) {
+            throw new JwtTokenExpiredException("token is expired");
+        }catch (JwtException e) {
+            throw new JwtTokenExpiredException("invalid jwt token");
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private SecretKey decryptKey(String secretKey) {
