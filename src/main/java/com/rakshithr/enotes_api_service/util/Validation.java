@@ -2,8 +2,7 @@ package com.rakshithr.enotes_api_service.util;
 
 import com.rakshithr.enotes_api_service.dto.CategoryDto;
 import com.rakshithr.enotes_api_service.dto.TodoDto;
-import com.rakshithr.enotes_api_service.dto.UserDto;
-import com.rakshithr.enotes_api_service.entity.Role;
+import com.rakshithr.enotes_api_service.dto.UserRequest;
 import com.rakshithr.enotes_api_service.enums.TodoStatus;
 import com.rakshithr.enotes_api_service.exception.ExistDataException;
 import com.rakshithr.enotes_api_service.exception.ResourceNotFoundException;
@@ -84,39 +83,39 @@ public class Validation {
 
     }
 
-    public void userValidation(UserDto userDto){
+    public void userValidation(UserRequest userRequest){
 
-        if(!StringUtils.hasText(userDto.getFirstName())){
+        if(!StringUtils.hasText(userRequest.getFirstName())){
             throw new IllegalArgumentException("first name is invalid");
         }
 
-        if(!StringUtils.hasText(userDto.getLastName())){
+        if(!StringUtils.hasText(userRequest.getLastName())){
             throw new IllegalArgumentException("last name is invalid");
         }
 
-        if(!StringUtils.hasText(userDto.getEmail()) || !userDto.getEmail().matches(Constants.EMAIL_REGEX)){
+        if(!StringUtils.hasText(userRequest.getEmail()) || !userRequest.getEmail().matches(Constants.EMAIL_REGEX)){
             throw new IllegalArgumentException("email is invalid");
         }
         else{
             // validate email existing
-            Boolean existEmail = userRepository.existsByEmail(userDto.getEmail());
+            Boolean existEmail = userRepository.existsByEmail(userRequest.getEmail());
 
             if(existEmail){
                 throw new ExistDataException("email id already exist");
             }
         }
 
-        if(!StringUtils.hasText(userDto.getMobNo()) || !userDto.getMobNo().matches(Constants.MOBNO_REGEX)){
+        if(!StringUtils.hasText(userRequest.getMobNo()) || !userRequest.getMobNo().matches(Constants.MOBNO_REGEX)){
             throw new IllegalArgumentException("mobile number is invalid");
         }
 
-        if(CollectionUtils.isEmpty(userDto.getRoles())){
+        if(CollectionUtils.isEmpty(userRequest.getRoles())){
             throw new IllegalArgumentException("role is invalid");
         }
         else{
             List<Integer> roleIds = roleRepository.findAll().stream().map(r-> r.getId()).toList();
 
-            List<Integer> invalidReqRoleIds = userDto.getRoles().stream().map(r->r.getId())
+            List<Integer> invalidReqRoleIds = userRequest.getRoles().stream().map(r->r.getId())
                     .filter(roleId -> !roleIds.contains(roleId))
                     .toList();
 
