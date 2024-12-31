@@ -1,12 +1,9 @@
 package com.rakshithr.enotes_api_service.service;
 
-import com.rakshithr.enotes_api_service.dto.LoginRequest;
-import com.rakshithr.enotes_api_service.dto.LoginResponse;
-import com.rakshithr.enotes_api_service.dto.UserRequest;
+import com.rakshithr.enotes_api_service.dto.PasswordChangeRequest;
 
 public interface UserService {
 
-    Boolean register(UserRequest userRequest, String url) throws Exception;
+    void changePassword(PasswordChangeRequest passwordRequest);
 
-    LoginResponse login(LoginRequest loginRequest);
 }
