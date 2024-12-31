@@ -3,7 +3,7 @@ package com.rakshithr.enotes_api_service.controller;
 import com.rakshithr.enotes_api_service.dto.LoginRequest;
 import com.rakshithr.enotes_api_service.dto.LoginResponse;
 import com.rakshithr.enotes_api_service.dto.UserRequest;
-import com.rakshithr.enotes_api_service.service.UserService;
+import com.rakshithr.enotes_api_service.service.AuthService;
 import com.rakshithr.enotes_api_service.util.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest, HttpServletRequest request) throws Exception {
         String url = CommonUtil.getUrl(request);
-        Boolean register = userService.register(userRequest, url);
+        Boolean register = authService.register(userRequest, url);
 
         if(register){
             return CommonUtil.createBuildResponseMessage("register success", HttpStatus.CREATED);
@@ -38,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws Exception {
-        LoginResponse loginResponse = userService.login(loginRequest);
+        LoginResponse loginResponse = authService.login(loginRequest);
         if(ObjectUtils.isEmpty(loginResponse)){
             return CommonUtil.createErrorResponseMessage("invalid credentials", HttpStatus.BAD_REQUEST);
         }
