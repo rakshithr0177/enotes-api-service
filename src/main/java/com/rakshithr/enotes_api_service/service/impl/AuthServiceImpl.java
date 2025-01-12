@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
 
         if(!ObjectUtils.isEmpty(savedUser)){
             //send email
-            sendEmail(savedUser, url);
+            emailSendForRegister(savedUser, url);
             return true;
         }
         return false;
@@ -87,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    private void sendEmail(User savedUser, String url) throws Exception {
+    private void emailSendForRegister(User savedUser, String url) throws Exception {
 
         String message = "Hi, <b>[[username]]</b>" +
                 "<br> Your account registered successfully <br>"
