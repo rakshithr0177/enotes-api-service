@@ -1,0 +1,42 @@
+package com.rakshithr.enotes_api_service.service;
+
+import com.rakshithr.enotes_api_service.dto.FavouriteNoteDto;
+import com.rakshithr.enotes_api_service.dto.NotesDto;
+import com.rakshithr.enotes_api_service.dto.NotesResponse;
+import com.rakshithr.enotes_api_service.entity.FileDetails;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+public interface NotesService {
+
+    Boolean saveNotes(String notes, MultipartFile file) throws Exception;
+
+    List<NotesDto> getAllNotes();
+
+    byte[] downloadFile(FileDetails fileDetails) throws Exception;
+
+    FileDetails getFileDetails(Integer id) throws Exception;
+
+    NotesResponse getAllNotesByUser(Integer pageNo, Integer pageSize);
+
+    NotesResponse getAllNotesByUserSearch(Integer pageNo, Integer pageSize, String keyword);
+
+    void softDeleteNotes(Integer id) throws Exception;
+
+    void restoreNotes(Integer id) throws Exception;
+
+    List<NotesDto> getUserRecycleBinNotes();
+
+    void hardDeleteNotes(Integer id) throws Exception;
+
+    void emptyRecycleBin();
+
+    void favouriteNotes(Integer noteId) throws Exception;
+
+    void unFavouriteNotes(Integer favouriteNoteId) throws Exception;
+
+    List<FavouriteNoteDto> getUserFavouriteNotes();
+
+    Boolean copyNotes(Integer id) throws Exception;
+}
