@@ -7,8 +7,10 @@ import com.rakshithr.enotes_api_service.exception.SuccessException;
 import com.rakshithr.enotes_api_service.repository.UserRepository;
 import com.rakshithr.enotes_api_service.service.HomeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class HomeServiceImpl implements HomeService {
@@ -17,9 +19,11 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public Boolean verifyAccount(Integer userId, String verificationCode) throws Exception {
+        log.info("HomeServiceImpl : verifyAccount() : Start");
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("invalid user"));
 
         if(user.getStatus().getVerificationCode() == null){
+            log.info("message : Account already verified");
             throw new SuccessException("account already verified");
         }
 
@@ -29,10 +33,11 @@ public class HomeServiceImpl implements HomeService {
             status.setVerificationCode(null);
 
             userRepository.save(user);
-
+            log.info("message : Account verification success");
             return true;
         }
 
+        log.info("HomeServiceImpl : verifyAccount() : End");
         return false;
     }
 }
