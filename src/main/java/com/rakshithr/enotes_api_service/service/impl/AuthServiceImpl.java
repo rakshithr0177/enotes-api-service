@@ -12,6 +12,7 @@ import com.rakshithr.enotes_api_service.service.AuthService;
 import com.rakshithr.enotes_api_service.service.EmailService;
 import com.rakshithr.enotes_api_service.util.Validation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -45,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Boolean register(UserRequest userRequest, String url) throws Exception {
-
+        log.info("AuthServiceImpl : register() : Exceution Start");
         validation.userValidation(userRequest);
 
         User user = modelMapper.map(userRequest, User.class);
@@ -61,12 +63,19 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepository.save(user);
 
-        if(!ObjectUtils.isEmpty(savedUser)){
-            //send email
-            emailSendForRegister(savedUser, url);
-            return true;
+        if(ObjectUtils.isEmpty(savedUser)){
+            log.info("Error : {}","user not saved");
+            return false;
         }
-        return false;
+
+        log.info("Message : {}","User Register success");
+
+        //send email
+        emailSendForRegister(savedUser, url);
+
+        log.info("Message : {}","email send success");
+        log.info("AuthServiceImpl : register() : Exceution End");
+        return true;
     }
 
     @Override

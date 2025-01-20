@@ -24,16 +24,19 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest, HttpServletRequest request) throws Exception {
+        log.info("AuthController : registerUser() : Execution Start");
         String url = CommonUtil.getUrl(request);
         Boolean register = authService.register(userRequest, url);
 
-        if(register){
-            return CommonUtil.createBuildResponseMessage("register success", HttpStatus.CREATED);
+        if(!register){
+            log.info("Error : {}","Register failed");
+            return CommonUtil.createErrorResponseMessage("register failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return CommonUtil.createErrorResponseMessage("register failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        log.info("AuthController : registerUser() : Execution End");
+        return CommonUtil.createBuildResponseMessage("register success", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
